@@ -24,6 +24,7 @@ void configWIFI(){
   sendData("AT+RST\r\n",2000);      // resetear módulo
   sendData("AT+CWMODE=1\r\n",1000); // configurar como cliente
   sendData("AT+CWJAP=\"Pepe\",\"pepitopp\"\r\n",8000); //SSID y contraseña para unirse a red 
+  //sendData("AT+CWJAP=\"UDNet_Eventos\",\"hackathon_2018\"\r\n",8000); //SSID y contraseña para unirse a red 
   sendData("AT+CIFSR\r\n",1000);    // obtener dirección IP
   sendData("AT+CIPMUX=1\r\n",1000); // configurar para multiples conexiones
   sendData("AT+CIPSERVER=1,80\r\n",1000);         // servidor en el puerto 80
@@ -59,21 +60,43 @@ void runWIFI(){
   //Serial.println(ip.substring(ip.indexOf("+CIFSR:STAIP,"), ip.indexOf("+CIFSR:STAMAC")));
   Serial.println("FIN Imprimiendo IP");
 
+ Serial.println("Estableciendo conex´on con el servidor");
+
+
+
+ gateway="192.168.173.1/?bandera=0&id=0&latitud=1.0&longitud=2.0&lleno=0";
+ //gateway="www.aprende-web.net";
+
+ int variable1=364;
+ float variable2=3.14;
+ 
+ BT1.println("AT+CIPSTART=\"TCP\",\"" + gateway + "\",80");
+
+ 
+if( BT1.find("OK"))
+      { 
+        Serial.println("Conexion establecida con el servidor");
+      }
+ /*
 //Armamos el encabezado de la peticion http
-  String peticionHTTP= "GET /?bandera=0&id=1&latitud=1.0&longitud=2.0&lleno=0";
-  peticionHTTP=peticionHTTP+String(variable1)+"&b="+String(variable2)+" HTTP/1.1\r\n";
-  peticionHTTP=peticionHTTP+"Host: "+gateway+"\r\n\r\n";
+  String peticionHTTP= "GET 192.168.173.1/?bandera=0&id=0&latitud=1.0&longitud=2.0&lleno=0 HTTP/1.1\r\n";
+  //peticionHTTP=peticionHTTP+String(variable1)+"&b="+String(variable2)+" HTTP/1.1\r\n";
+  //peticionHTTP=peticionHTTP+"Host: 192.163.173.1\r\n\r\n";
 
+  Serial.println("Peticion HTTP: "+ peticionHTTP);
   //Enviamos el tamaño en caracteres de la peticion http:  
-  SerialESP8266.print("AT+CIPSEND=");
-  SerialESP8266.println(peticionHTTP.length());
+  BT1.print("AT+CIPSEND=");
+  BT1.println(peticionHTTP.length());
 
+  Serial.println("Peticion en proceso");
   //esperamos a ">" para enviar la petcion  http
-  if(SerialESP8266.find(">")) // ">" indica que podemos enviar la peticion http
+  /*if(BT1.find(">")) // ">" indica que podemos enviar la peticion http
   {
     Serial.println("Enviando HTTP . . .");
-    SerialESP8266.println(peticionHTTP);
-  }
+    BT1.println(peticionHTTP);
+  //}
+
+  */
   
 }
 
