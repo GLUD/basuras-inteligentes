@@ -21,7 +21,7 @@ void setup() {
   pinMode(Trigger, OUTPUT); //pin como salida
   pinMode(Echo, INPUT);  //pin como entrada
   digitalWrite(Trigger, LOW);//Inicializamos el pin con 0
-  //configWIFI(); //Serial 115200
+  configWIFI(); //Serial 115200
 }
 
 void loop(){

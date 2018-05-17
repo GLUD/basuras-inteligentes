@@ -1,84 +1,6 @@
 // Wifi
 #include <SoftwareSerial.h>
-#include <NewPing.h>
-#include <TinyGPS.h>
-SoftwareSerial BT1(9, 8); // RX | TX
-SoftwareSerial serial1(10, 11); // RX, TX
-TinyGPS gps1;
-
-const int Trigger = 4;   //Pin digital 2 para el Trigger del sensor
-const int Echo = 3;   //Pin digital 3 para el Echo del sensor
-// Variables de la caneca
-const long dMax = 8;
-const long dMin = 9;
-bool lleno = 0;
-double latitud;
-double longitud;
-
-void setup() {
-  serial1.begin(9600);
-  Serial.begin(9600);
-  pinMode(Trigger, OUTPUT); //pin como salida
-  pinMode(Echo, INPUT);  //pin como entrada
-  digitalWrite(Trigger, LOW);//Inicializamos el pin con 0
-  configWIFI(); //Serial 115200
-}
-
-void loop(){
-  long t; //timepo que demora en llegar el eco
-  long d; //distancia en centimetros
-
-  digitalWrite(Trigger, HIGH);
-  delayMicroseconds(10);          //Enviamos un pulso de 10us
-  digitalWrite(Trigger, LOW);
-  
-  t = pulseIn(Echo, HIGH); //obtenemos el ancho del pulso
-  d = t/59;             //escalamos el tiempo a una distancia en cm
-
-  if(d<=3){
-    lleno == 1;
-  }
-  
-  delay(100);          //Hacemos una pausa de 100ms
-
-  // Iniciar módulo WIFI ESP8266
-  //runWIFI();
-
-  Serial.print(lleno);
-  
-  bool recebido = false;
-
-  while (serial1.available()) {
-     char cIn = serial1.read();
-     recebido = gps1.encode(cIn);
-  }
-
-  if (recebido) {
-     //Latitude e Longitude
-     long latitude, longitude;
-     unsigned long idadeInfo;
-     gps1.get_position(&latitude, &longitude, &idadeInfo);     
-
-     if (latitude != TinyGPS::GPS_INVALID_F_ANGLE) {
-        Serial.print("Latitude: ");
-        Serial.println(float(latitude) / 100000, 6);
-     }
-
-     if (longitude != TinyGPS::GPS_INVALID_F_ANGLE) {
-        Serial.print("Longitude: ");
-        Serial.println(float(longitude) / 100000, 6);
-     }
-     latitud=float(latitude) / 100000;
-     longitud=float(longitude) / 100000;
-
-     if (idadeInfo != TinyGPS::GPS_INVALID_AGE) {
-        Serial.print("Idade da Informacao (ms): ");
-        Serial.println(idadeInfo);
-     }
-  }
-  Serial.print(latitud);
-  Serial.print(longitud);
-}
+SoftwareSerial BT1(3, 8); // RX | TX
 
 void sendData(String comando, const int timeout){
     /*
@@ -160,10 +82,12 @@ if( BT1.find("OK"))
   String peticionHTTP= "GET 192.168.173.1/?bandera=0&id=0&latitud=1.0&longitud=2.0&lleno=0 HTTP/1.1\r\n";
   //peticionHTTP=peticionHTTP+String(variable1)+"&b="+String(variable2)+" HTTP/1.1\r\n";
   //peticionHTTP=peticionHTTP+"Host: 192.163.173.1\r\n\r\n";
+
   Serial.println("Peticion HTTP: "+ peticionHTTP);
   //Enviamos el tamaño en caracteres de la peticion http:  
   BT1.print("AT+CIPSEND=");
   BT1.println(peticionHTTP.length());
+
   Serial.println("Peticion en proceso");
   //esperamos a ">" para enviar la petcion  http
   /*if(BT1.find(">")) // ">" indica que podemos enviar la peticion http
@@ -171,5 +95,18 @@ if( BT1.find("OK"))
     Serial.println("Enviando HTTP . . .");
     BT1.println(peticionHTTP);
   //}
+
   */
+  
 }
+
+void setup(){
+  Serial.begin(9600);
+  configWIFI(); //Serial 115200
+}
+
+void loop(){
+  // Iniciar módulo WIFI ESP8266
+  runWIFI();
+}
+
